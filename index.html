@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Winky</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="birthday-gameboy.css">
+</head>
+<body>
+
+<div class="gameboy" id="gameboy">
+
+  <!-- SCREEN AREA -->
+  <div class="screen-area">
+    <div class="screen-inner">
+      <div class="screen" id="screen">
+
+        <!-- SCREEN 00: BOOT -->
+        <div class="screen-content active" id="screen-boot">
+          <div class="boot-logo">
+            <span class="boot-diamond"></span> Haloo Winky<span class="boot-diamond"></span>
+          </div>
+          <div class="boot-title">BIRTHDAY EDITION<br><br></div>
+          <div class="boot-bar-wrap">
+            <div class="boot-bar" id="boot-bar"></div>
+          </div>
+          <div id="boot-pct" style="font-family:'Press Start 2P',monospace;font-size:5px;color:var(--pixel-mid)">Loading...</div>
+          <div class="boot-press" id="boot-press">PRESS START TO PLAY</div>
+        </div>
+
+        <!-- SCREEN 01: MENU -->
+        <div class="screen-content" id="screen-menu">
+          <div class="menu-header">HAPPY BIRTHDAY</div>
+          <hr class="menu-divider">
+          <div class="menu-top-row">
+            <div class="menu-avatar">
+              <canvas class="pixel-avatar-canvas" id="avatar-menu" width="20" height="20"></canvas>
+            </div>
+            <div class="menu-greeting">Selamat ulang<br>tahun Winky!</div>
+          </div>
+          <div class="menu-items" id="menu-items">
+            <div class="menu-item selected" data-screen="pesan">
+              <span class="menu-cursor">►</span> INCOMING MESSAGE
+            </div>
+            <div class="menu-item" data-screen="galeri">
+              <span class="menu-cursor"> </span> MEMORY CARD
+            </div>
+            <div class="menu-item" data-screen="photo">
+              <span class="menu-cursor"> </span> PHOTOBOX
+            </div>
+            <div class="menu-item" data-screen="lilin">
+              <span class="menu-cursor"> </span> MAKE A WISH
+            </div>
+            <div class="menu-item" data-screen="bunga">
+              <span class="menu-cursor"> </span> BONUS STAGE
+            </div>
+          </div>
+          <div class="menu-hint">▲▼: pilih  A: masuk  START: pause</div>
+        </div>
+
+        <!-- SCREEN 02: PESAN -->
+        <div class="screen-content" id="screen-pesan">
+          <div class="dialog-avatar-box">
+            <div class="dialog-avatar">
+              <canvas class="pixel-avatar-canvas" id="avatar-pesan" width="25" height="25"></canvas>
+            </div>
+            <div>
+              <div class="dialog-name">INCOMING MESSAGE</div>
+            </div>
+          </div>
+          <div class="dialog-box" id="dialog-box">
+            <span id="dialog-text"></span>
+            <span id="dialog-cursor" style="animation:blink2 0.5s infinite;display:inline">▌</span>
+            <div class="dialog-next-indicator" id="dialog-indicator" style="display:none">▼</div>
+          </div>
+          <div class="dialog-page-info" id="dialog-page-info"></div>
+          <div class="dialog-hint">◄►: ganti pesan  A: lanjut  B: kembali</div>
+        </div>
+
+        <!-- SCREEN 03: GALERI -->
+        <div class="screen-content" id="screen-galeri">
+          <div class="galeri-title">MEMORY CARD</div>
+          <hr class="menu-divider">
+          <div class="galeri-grid" id="galeri-grid">
+            <div class="galeri-slot selected" data-idx="0">
+              <img id="galeri-img-0" src="foto/image.png" alt="Kenangan 1">
+            </div>
+            <div class="galeri-slot" data-idx="1">
+              <img id="galeri-img-1" src="foto/image copy.png" alt="Kenangan 2">
+            </div>
+            <div class="galeri-slot" data-idx="2">
+              <img id="galeri-img-2" src="foto/image copy 3.png" alt="Kenangan 3">
+            </div>
+            <div class="galeri-slot" data-idx="3">
+              <img id="galeri-img-3" src="foto/image copy 2.png" alt="Kenangan 4">
+            </div>
+          </div>
+          <div class="galeri-hint">◄►▲▼: pilih  A: lihat  B: kembali</div>
+        </div>
+
+        <!-- SCREEN 03b: GALERI VIEW -->
+        <div class="screen-content" id="screen-galeri-view" style="flex-direction:column">
+          <img id="galeri-view-img" src="" alt="" style="width:100%;height:65%;object-fit:contain;background:#1a0808;border-bottom:2px solid var(--pixel-dark);display:block">
+          <div id="galeri-view-caption" style="padding:6px 10px;font-size:clamp(13px,3.2vw,16px);color:var(--pixel-dark);flex:1;font-family:'VT323',monospace"></div>
+          <div id="galeri-view-hint" style="font-family:'Press Start 2P',monospace;font-size:5px;color:var(--pixel-mid);padding:4px 10px">B: kembali ke galeri</div>
+        </div>
+
+        <!-- SCREEN 04: PHOTOBOX -->
+        <div class="screen-content" id="screen-photo">
+          <div class="photo-title">PHOTOBOX</div>
+          <div id="photo-preview-wrap">
+            <video id="photo-video" autoplay muted playsinline style="display:block"></video>
+            <canvas id="photo-canvas"></canvas>
+            <div id="photo-countdown">3</div>
+            <div id="photo-flash"></div>
+          </div>
+          <div class="photo-filter-row">
+            <span class="photo-row-label">FILTER:</span>
+            <button class="filter-btn active" data-filter="none">NORMAL</button>
+            <button class="filter-btn" data-filter="gbc">GBC</button>
+            <button class="filter-btn" data-filter="dmg">DMG</button>
+            <button class="filter-btn" data-filter="bloom">BLOOM</button>
+          </div>
+          <div class="photo-frame-row">
+            <span class="photo-row-label">FRAME:</span>
+            <button class="frame-btn active" data-frame="photobox">PHOTOBOX</button>
+            <button class="frame-btn" data-frame="polaroid">POLAROID</button>
+            <button class="frame-btn" data-frame="vintage">VINTAGE</button>
+          </div>
+          <div class="photo-hint">A: ambil foto  ◄►: filter  ▲▼: frame  B: kembali</div>
+          <div id="photo-result">
+            <canvas id="photo-result-canvas"></canvas>
+            <div style="display:flex;gap:4px">
+              <button class="filter-btn active" id="photo-save-btn" style="flex:1">A: SIMPAN</button>
+              <button class="filter-btn" id="photo-retry-btn" style="flex:1">B: ULANGI</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN 05: LILIN -->
+        <div class="screen-content" id="screen-lilin">
+          <div class="lilin-title">TIUP LILIN!</div>
+          <canvas id="lilin-canvas" height="100"></canvas>
+          <div class="lilin-progress-wrap">
+            <div class="lilin-progress-bar" id="lilin-bar"></div>
+          </div>
+          <div class="lilin-count">
+            <span id="lilin-blown">0</span>/10 lilin padam
+          </div>
+          <div class="lilin-birthday-msg" id="lilin-birthday-msg">Happy Birthday<br>Winky!!!</div>
+          <div class="lilin-hint" id="lilin-hint">tekan A cepat-cepat!<br>B: kembali</div>
+        </div>
+
+        <!-- SCREEN 06: BUNGA -->
+        <div class="screen-content" id="screen-bunga">
+          <div class="bunga-title">BONUS STAGE</div>
+          <div class="bunga-instruction">✿ Siram bunga dengan A!<br>Setiap bunga = satu harapan</div>
+          <canvas id="bunga-canvas" height="90"></canvas>
+          <div class="bunga-wish-box" id="bunga-wish"></div>
+          <div class="bunga-hint">A: siram  B: kembali</div>
+
+          <!-- TAMAT OVERLAY -->
+          <div class="bunga-tamat" id="bunga-tamat">
+            <img src="foto/bunga png.png" alt="Bunga" class="bunga-tamat-img">
+            <div class="bunga-tamat-title">TAMAT</div>
+            <div class="bunga-tamat-msg">Ini bunga yang lu tanam tadi<br>WKWKWKWWKWK</div>
+            <div class="bunga-tamat-hint">B: kembali ke menu</div>
+          </div>
+        </div>
+
+        <!-- SCREEN 07: CREDITS -->
+        <div class="screen-content" id="screen-credits">
+          <div class="credits-title">- GAME CLEAR -</div>
+          <div class="credits-section">HAPPY BIRTHDAY</div>
+          <div class="credits-name" id="credits-bestie-name">Winky</div>
+          <div class="credits-section">MADE BY</div>
+          <div class="credits-name" id="credits-maker-name">Wirawrr</div>
+          <div class="credits-section" style="margin-top:10px">START: main lagi</div>
+        </div>
+
+        <!-- PAUSE OVERLAY -->
+        <div id="pause-overlay">
+          <div class="pause-title">- PAUSED -</div>
+          <div class="pause-item selected" data-pauseaction="resume">► LANJUT</div>
+          <div class="pause-item" data-pauseaction="menu">  MENU UTAMA</div>
+          <div class="pause-item" data-pauseaction="credits">  CREDITS</div>
+          <div class="pause-hint">A: pilih  START/B: tutup</div>
+        </div>
+
+      </div><!-- /screen -->
+    </div><!-- /screen-inner -->
+
+    <div class="screen-controls">
+      <div style="display:flex;align-items:center;gap:4px">
+        <div class="power-dot"></div>
+        <div class="power-label">POWER</div>
+      </div>
+      <div class="volume-line">
+        <div class="vol-notch"></div>
+        <div class="vol-notch"></div>
+        <div class="vol-notch"></div>
+        <div class="power-label" style="margin-left:3px">VOL</div>
+      </div>
+    </div>
+  </div><!-- /screen-area -->
+
+  <!-- CONTROLS -->
+  <div class="controls-row">
+
+    <!-- D-PAD -->
+    <div class="dpad" id="dpad">
+      <div class="dpad-h"></div>
+      <div class="dpad-v"></div>
+      <div class="dpad-center"></div>
+      <div class="dpad-btn dpad-up" id="dpad-up"><span class="dpad-arrow">▲</span></div>
+      <div class="dpad-btn dpad-down" id="dpad-down"><span class="dpad-arrow">▼</span></div>
+      <div class="dpad-btn dpad-left" id="dpad-left"><span class="dpad-arrow">◄</span></div>
+      <div class="dpad-btn dpad-right" id="dpad-right"><span class="dpad-arrow">►</span></div>
+    </div>
+
+    <!-- A / B BUTTONS -->
+    <div class="ab-buttons">
+      <div style="display:flex;gap:10px;align-items:center">
+        <div style="text-align:center">
+          <button class="btn-circle btn-b" id="btn-b">B</button>
+          <div class="btn-ab-label">B</div>
+        </div>
+        <div style="text-align:center">
+          <button class="btn-circle btn-a" id="btn-a">A</button>
+          <div class="btn-ab-label">A</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /controls-row -->
+
+  <!-- START / SELECT -->
+  <div class="start-select-row">
+    <div class="btn-small">
+      <button class="btn-pill" id="btn-select"></button>
+      <div class="btn-pill-label">SELECT</div>
+    </div>
+    <div class="btn-small">
+      <button class="btn-pill" id="btn-start"></button>
+      <div class="btn-pill-label">START</div>
+    </div>
+  </div>
+
+  <!-- SPEAKER -->
+  <div class="speaker">
+    <div class="speaker-dot"></div><div class="speaker-dot"></div>
+    <div class="speaker-dot"></div><div class="speaker-dot"></div>
+    <div class="speaker-dot"></div><div class="speaker-dot"></div>
+    <div class="speaker-dot"></div><div class="speaker-dot"></div>
+    <div class="speaker-dot"></div>
+  </div>
+
+</div><!-- /gameboy -->
+
+<script src="birthday-gameboy.js"></script>
+</body>
+</html>
