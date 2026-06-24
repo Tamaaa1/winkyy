@@ -5,6 +5,23 @@ const bgMusic = new Audio('music/Mikroskosmos.mp3');
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
 
+// Fix: mobile browser bfcache — halaman di-restore dari cache,
+// audio ter-suspend. pageshow dengan e.persisted = true artinya
+// halaman dari cache (back/forward navigation).
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted && !bgMusic.paused) {
+    bgMusic.load();
+    bgMusic.play().catch(() => {});
+  }
+});
+
+// Fix: tab di-background lalu dibuka lagi di mobile
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && !bgMusic.paused) {
+    bgMusic.play().catch(() => {});
+  }
+});
+
 // ═══════════════════════════════════════════════════════
 // CUSTOMIZE THESE VALUES
 // ═══════════════════════════════════════════════════════
