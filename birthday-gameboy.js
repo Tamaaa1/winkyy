@@ -4,30 +4,32 @@
 const bgMusic = new Audio('music/Mikroskosmos.mp3');
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
-let musicStarted = false; // track apakah user sudah pernah play
 
 function startMusic() {
-  if (musicStarted) return;
-  musicStarted = true;
-  bgMusic.load();
+  bgMusic.currentTime = 0;
   bgMusic.play().catch(() => {});
 }
 
-// Fix: bfcache — saat halaman di-restore (back/forward di mobile),
-// browser suspend audio. Cek musicStarted bukan bgMusic.paused
-// karena browser SUDAH meng-pause duluan saat restore bfcache.
-window.addEventListener('pageshow', (e) => {
-  if (e.persisted && musicStarted) {
+function resumeMusic() {
+  if (bgMusic.paused) {
     bgMusic.play().catch(() => {});
+  }
+}
+
+// bfcache fix — Chrome mobile pause audio saat navigasi
+window.addEventListener('pageshow', () => {
+  setTimeout(resumeMusic, 100);
+});
+
+// tab background fix
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    setTimeout(resumeMusic, 100);
   }
 });
 
-// Fix: tab di-background lalu dibuka lagi
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && musicStarted) {
-    bgMusic.play().catch(() => {});
-  }
-});
+// pause saat tab tidak aktif, resume saat user interaksi
+document.addEventListener('click', resumeMusic, { once: true });
 
 // ═══════════════════════════════════════════════════════
 // CUSTOMIZE THESE VALUES
@@ -823,6 +825,7 @@ function handleInput(action) {
   if (action === 'select') {
     soundEnabled = !soundEnabled;
     localStorage.setItem('gbSoundEnabled', soundEnabled);
+    bgMusic.muted = !soundEnabled;
     return;
   }
 
