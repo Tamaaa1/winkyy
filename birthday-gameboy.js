@@ -4,20 +4,27 @@
 const bgMusic = new Audio('music/Mikroskosmos.mp3');
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
+let musicStarted = false; // track apakah user sudah pernah play
 
-// Fix: mobile browser bfcache — halaman di-restore dari cache,
-// audio ter-suspend. pageshow dengan e.persisted = true artinya
-// halaman dari cache (back/forward navigation).
+function startMusic() {
+  if (musicStarted) return;
+  musicStarted = true;
+  bgMusic.load();
+  bgMusic.play().catch(() => {});
+}
+
+// Fix: bfcache — saat halaman di-restore (back/forward di mobile),
+// browser suspend audio. Cek musicStarted bukan bgMusic.paused
+// karena browser SUDAH meng-pause duluan saat restore bfcache.
 window.addEventListener('pageshow', (e) => {
-  if (e.persisted && !bgMusic.paused) {
-    bgMusic.load();
+  if (e.persisted && musicStarted) {
     bgMusic.play().catch(() => {});
   }
 });
 
-// Fix: tab di-background lalu dibuka lagi di mobile
+// Fix: tab di-background lalu dibuka lagi
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && !bgMusic.paused) {
+  if (document.visibilityState === 'visible' && musicStarted) {
     bgMusic.play().catch(() => {});
   }
 });
@@ -805,7 +812,7 @@ function handleInput(action) {
 
   if (currentScreen === 'boot') {
     if ((action === 'start' || action === 'a') && bootReady) {
-      bgMusic.play().catch(() => {});
+      startMusic();
       SFX.confirm();
       showScreen('menu');
     }
